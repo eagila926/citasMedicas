@@ -1,109 +1,31 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-        <title>Annex - Responsive Bootstrap 4 Admin Dashboard</title>
-        <?php include 'layout/head.php'; ?>
-        
-
-    </head>
-
-    <body class="fixed-left">
-
-        <!-- Loader -->
-        <div id="preloader"><div id="status"><div class="spinner"></div></div></div>
-
-        <!-- Begin page -->
-        <div id="wrapper">
-
-            <!-- Incluir el archivo del menú de navegación -->
-            <?php include 'layout/nav-left.php'; ?>
-
-            <!-- Inicio del contenido -->
-
-            <div class="content-page">
-                <!-- Start content -->
-                <div class="content">
-
-                    <?php include 'layout/top-var.php'; ?>
-
-                    <div class="page-content-wrapper ">
-
-                        <div class="container-fluid">
-
-                                                                            
-                        </div><!-- container -->
-
-
-                    </div> <!-- Page content Wrapper -->
-
-                </div> <!-- content -->
-
-                <footer class="footer">
-                    © 2018 Annex by Mannatthemes.
-                </footer>
-
-            </div>
-            <!-- End Right content here -->
-
-
-            <!-- Start right Content here -->
-            <footer class="footer">
-                © 2025 SmartSalud.
-            </footer>
-
-        </div>
-        <!-- END wrapper -->
-
-        <!-- jQuery  -->
-        <script src="assets/js/jquery.min.js"></script>
-        <script src="assets/js/popper.min.js"></script>
-        <script src="assets/js/bootstrap.min.js"></script>
-        <script src="assets/js/modernizr.min.js"></script>
-        <script src="assets/js/detect.js"></script>
-        <script src="assets/js/fastclick.js"></script>
-        <script src="assets/js/jquery.slimscroll.js"></script>
-        <script src="assets/js/jquery.blockUI.js"></script>
-        <script src="assets/js/waves.js"></script>
-        <script src="assets/js/jquery.nicescroll.js"></script>
-        <script src="assets/js/jquery.scrollTo.min.js"></script>
-
-        <script src="assets/plugins/skycons/skycons.min.js"></script>
-        <script src="assets/plugins/raphael/raphael-min.js"></script>
-        <script src="assets/plugins/morris/morris.min.js"></script>
-        
-        <script src="assets/pages/dashborad.js"></script>
-
-        <!-- App js -->
-        <script src="assets/js/app.js"></script>
-        <script>
-             /* BEGIN SVG WEATHER ICON */
-             if (typeof Skycons !== 'undefined'){
-            var icons = new Skycons(
-                {"color": "#fff"},
-                {"resizeClear": true}
-                ),
-                    list  = [
-                        "clear-day", "clear-night", "partly-cloudy-day",
-                        "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
-                        "fog"
-                    ],
-                    i;
-
-                for(i = list.length; i--; )
-                icons.set(list[i], list[i]);
-                icons.play();
-            };
-
-        // scroll
-
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas Médicas</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
         $(document).ready(function() {
-            $("#boxscroll").niceScroll({cursorborder:"",cursorcolor:"#cecece",boxzoom:true});
-            $("#boxscroll2").niceScroll({cursorborder:"",cursorcolor:"#cecece",boxzoom:true}); 
+            $(".user-menu").click(function() {
+                $(".dropdown-menu").toggle();
+            });
         });
-        </script>
+    </script>
 
-    </body>
+    
+</head>
+<body>
+<?php include 'layout/nav-up.php'; ?>
+    <div class="content">
+        
+
+    
+    </div>
+    <footer class="footer">
+        &copy; 2025 SmartSalud.
+    </footer>
+</body>
 </html>
