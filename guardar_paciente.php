@@ -21,12 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $sql = "INSERT INTO pacientes (nombres, apellidos, tipo_documento, cedula, correo, celular, direccion, 
                                       fecha_nacimiento, sexo, ocupacion, estado_civil, hijos, religion, contacto_emergencia, 
-                                      numero_emergencia, peso, estatura, imc, antecedentes_personales, antecedentes_familiares, 
+                                      numero_emergencia, antecedentes_personales, antecedentes_familiares, 
                                       relaciones_familiares, enfermedad_actual, ciclo_sueno, ciclo_digestivo, dia_alimentacion, 
                                       plan_tratamiento) 
                 VALUES (:nombres, :apellidos, :tipo_documento, :cedula, :correo, :celular, :direccion, 
                         :fecha_nacimiento, :sexo, :ocupacion, :estado_civil, :hijos, :religion, :contacto_emergencia, 
-                        :numero_emergencia, :peso, :estatura, :imc, :antecedentes_personales, :antecedentes_familiares, 
+                        :numero_emergencia, :antecedentes_personales, :antecedentes_familiares, 
                         :relaciones_familiares, :enfermedad_actual, :ciclo_sueno, :ciclo_digestivo, :dia_alimentacion, 
                         :plan_tratamiento)";
 
@@ -48,9 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':religion' => $_POST["religion"],
             ':contacto_emergencia' => $_POST["contactoemergencia"],
             ':numero_emergencia' => $_POST["numeroemergencia"],
-            ':peso' => $_POST["peso"],
-            ':estatura' => $_POST["estatura"],
-            ':imc' => $_POST["imc"],
             ':antecedentes_personales' => $_POST["antecedentespersonales"],
             ':antecedentes_familiares' => $_POST["antfamiliares"],
             ':relaciones_familiares' => $_POST["familiainterpersonal"],

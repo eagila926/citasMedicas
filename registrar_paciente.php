@@ -148,20 +148,7 @@
                             <input type="number" name="numeroemergencia" class="form-control">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3">
-                        <label>Peso (kg):</label>
-                        <input type="number" name="peso" id="peso" class="form-control" step="0.01" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label>Estatura (m):</label>
-                            <input type="number" name="estatura" id="estatura" class="form-control" step="0.01" required>
-                        </div>
-                        <div class="col-md-6">
-                        <label>IMC:</label>
-                        <input type="number" name="imc" id="imc" class="form-control" readonly>
-                        </div>
-                    </div>
+                    
                     <div class="row">
                         <div class="col-md-12">
                             <label>Antecedentes Personales:</label>
@@ -223,23 +210,6 @@
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/popper.min.js"></script>
 <script src="assets/js/bootstrap.min.js"></script>
-
-<script>
-    document.getElementById('peso').addEventListener('input', calcularIMC);
-    document.getElementById('estatura').addEventListener('input', calcularIMC);
-
-    function calcularIMC() {
-        let peso = parseFloat(document.getElementById('peso').value);
-        let estatura = parseFloat(document.getElementById('estatura').value);
-
-        if (peso > 0 && estatura > 0) {
-            let imc = peso / (estatura * estatura);
-            document.getElementById('imc').value = imc.toFixed(2);
-        } else {
-            document.getElementById('imc').value = '';
-        }
-    }
-</script>
 
 </body>
 </html>
