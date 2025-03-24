@@ -40,7 +40,7 @@ body { margin: 0; font-family: Arial, sans-serif; }
 }
 .footer {
     text-align: center;
-    padding: 10px;
+    padding: 30px;
     background: #007bff;
     color: white;
     position: fixed;
