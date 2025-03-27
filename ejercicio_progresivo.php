@@ -66,6 +66,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         height: 100%;
         margin: 0;
         padding: 0;
+        background: #ffffff;
     }
 
     .content {
@@ -115,20 +116,19 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         <div class="col-5">
             <!-- Botón para ocultar/mostrar "first" -->
             <button class="toggle-content btn btn-sm btn-outline-primary" data-target="#first">˄</button>
-            <h4 style="margin-left: 30px">PARÁMETROS DE ALIMENTACIÓN – RECOMENDACIONES</h4>
+            <h4 style="margin-left: 30px">EJERCICIO – ACTIVIDAD FISICA</h4>
             <div class="first" id="first">
-                <div id="contenido-second"></div> <!-- AQUI se mostrarán los checkboxes -->
-                
-                
+                <div id="contenido-tercero">
+                    <div class="input-group mb-3">
+                        <textarea type="text" class="form-control" id="recomendacion-personalizada" placeholder="Escribe una recomendación"></textarea>
+                        <button class="btn btn-primary" type="button" id="agregar-recomendacion">Agregar</button>
+                    </div>
+                </div>
                 <div class="d-flex justify-content-between mt-4">
                     <button class="btn btn-secondary" onclick="window.history.back()">← Retroceder</button>
-                    <a href="#" id="btn-continuar-item3" class="btn btn-success">Continuar al ítem 2 →</a>
+                    <a href="#" id="btn-continuar-item3" class="btn btn-success">Continuar →</a>
                 </div>
-
-
             </div>
-
-            <div id="contenedor-boton-continuar" class="mt-3 text-center"></div>
         </div>
 
         
@@ -154,16 +154,66 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
             <div class="alimentacion">
             </div>
+
+            <div class="ejercicio-progre">
+                <h4 id="titulo-ejercicio-progre" style="margin-top:20px;">2. EJERCICIO – ACTIVIDAD FISICA</h4>
+                <p id="lista-ejercicio-progre"></p>
+            </div>
+
         </div>
     </div>
     
     </div>
     <script>
+
+        // Agrega automáticamente el primer ítem como título h4 después del párrafo
+        const primerItem = "2.	EJERCICIO – ACTIVIDAD FISICA";
+        $("#titulo-alimentacion").text(primerItem).show();
+                      
+        $(document).ready(function () {
+            // Mostrar título al cargar
+            $("#titulo-ejercicio-progre").show();
+
+            // Agregar recomendación personalizada
+            $(document).on("click", "#agregar-recomendacion", function () {
+                const texto = $("#recomendacion-personalizada").val().trim();
+                const lista = $("#lista-ejercicio-progre");
+
+                if (texto && !lista.find(`li:contains("${texto}")`).length) {
+                    lista.append(`<p>${texto}</p>`);
+                    $("#recomendacion-personalizada").val(""); // limpiar input
+                }
+            });
+
+            // Restaurar contenido del plan si está en localStorage
+            if (localStorage.getItem("html_plan")) {
+                $('#plan-lista').html(localStorage.getItem("html_plan"));
+            }
+
+            // Restaurar recomendaciones de alimentación si existen
+            if (localStorage.getItem("html_alimentacion")) {
+                const contenidoAlimentacion = localStorage.getItem("html_alimentacion");
+                const divAlimentacion = document.querySelector(".alimentacion");
+
+                if (divAlimentacion) {
+                    divAlimentacion.innerHTML = contenidoAlimentacion;
+                    divAlimentacion.style.marginTop = "20px";
+                }
+            }
+
+            // Botón para mostrar/ocultar contenido
+            $(document).on("click", ".toggle-content", function () {
+                let target = $(this).data("target");
+                $(target).toggle();
+                $(this).text($(this).text() === "˄" ? "˅" : "˄");
+            });
+        });
+
                     
         // Detectar a qué archivo ir al ítem 2 del plan
-        $(document).on("click", "#btn-continuar-item2", function (e) {
+        $(document).on("click", "#btn-continuar-item3", function (e) {
             e.preventDefault();
-            const segundoItem = $("#plan-lista li:nth-child(2)").text().trim();
+            const segundoItem = $("#plan-lista li:nth-child(3)").text().trim();
             const palabras = segundoItem.split(" ");
             const claveBusqueda = palabras.slice(0, 2).join(" ").toUpperCase();
 
@@ -184,8 +234,8 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                 const cedula = "<?php echo $cedula_paciente; ?>";
 
                 // GUARDAR contenido de alimentación para la siguiente fase
-                const contenidoAlimentacion = document.querySelector(".alimentacion").innerHTML;
-                localStorage.setItem("html_alimentacion", contenidoAlimentacion);
+                const contenidoEjercicio = document.querySelector(".ejercicio-progre").innerHTML;
+                localStorage.setItem("html_ejercicio-progre", contenidoEjercicio);
 
                 window.location.href = `${archivo}?cedula=${cedula}`;
             }
@@ -193,19 +243,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                 alert("No se encontró una ruta para el ítem 2 del plan.");
             }
         });
-
-        // Añadir recomendación personalizada
-        $(document).on("click", "#agregar-recomendacion", function () {
-            const texto = $("#recomendacion-personalizada").val().trim();
-            const lista = $("#lista-recomendaciones");
-
-            if (texto && !lista.find(`li:contains("${texto}")`).length) {
-                lista.append(`<li>${texto}</li>`);
-                $("#recomendacion-personalizada").val(""); // limpiar input
-                $("#titulo-alimentacion").show();
-            }
-        });
-
 
         // Evento para ocultar/mostrar cada contenido de `col-5`
         $(document).on("click", ".toggle-content", function() {
@@ -226,8 +263,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                 divAlimentacion.style.marginTop = "20px";
             }
         }
-
-
 
 </script>
 
