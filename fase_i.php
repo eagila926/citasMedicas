@@ -208,7 +208,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             </div>
             
             <div class="primerafase">
-                <h4 id="titulo-primerafase" style="margin-top:20px;">5. Fase I </h4> <p style="font-size:25"><strong>Manejo con medicamentos indicados así:</strong></p>
+                <h4 id="titulo-primerafase" style="margin-top:20px;"></h4> <p style="font-size:25"><strong>Manejo con medicamentos indicados así:</strong></p>
                 <div id="lista-primerafase" contenteditable="true" style="border:1px solid #ccc; padding:10px; border-radius:8px;"></div>
             </div>
 
@@ -383,7 +383,27 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             $(this).text($(this).text() === "˄" ? "˅" : "˄"); // Cambiar el ícono
         });
 
-        if (localStorage.getItem("html_plan")) $('#plan-lista').html(localStorage.getItem("html_plan"));
+        document.addEventListener('DOMContentLoaded', function () {
+            // Restaurar contenido del lado derecho
+            if (localStorage.getItem("html_plan")) $('#plan-lista').html(localStorage.getItem("html_plan"));
+            // Mostrar el título correspondiente al paso actual con índice incluido
+            const pasos = parseInt(localStorage.getItem("pasos"));
+            const htmlPlan = localStorage.getItem("html_plan");
+
+            if (!isNaN(pasos) && htmlPlan) {
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = htmlPlan;
+                const liItems = tempDiv.querySelectorAll("li");
+
+                if (liItems[pasos]) {
+                    const contenidoPaso = liItems[pasos].textContent.trim();
+                    const numeroPaso = pasos + 1;
+                    $("#titulo-primerafase").text(`${numeroPaso}. ${contenidoPaso}`).show();
+                } else {
+                    $("#titulo-primerafase").hide();
+                }
+            }
+        });
 
         // Restaurar recomendaciones alimenticias previas si existen
         if (localStorage.getItem("html_alimentacion")) {

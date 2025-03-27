@@ -126,7 +126,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                     </div>
                 </div>
                 <div class="d-flex justify-content-between mt-4">
-                    <button class="btn btn-secondary" onclick="window.history.back()">← Retroceder</button>
+                    <button class="btn btn-secondary" id="btn-retroceder">← Retroceder</button>
                     <a href="#" id="btn-continuar-item2" class="btn btn-success">Continuar al ítem 2 →</a>
                 </div>
 
@@ -158,7 +158,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             enfocada en retirar y mejorar lo siguiente:</p>
 
             <div class="alimentacion">
-                <h4 id="titulo-alimentacion" style="margin-top:20px; display:none;">1. PARÁMETROS DE ALIMENTACIÓN – RECOMENDACIONES</h4>
+                <h4 id="titulo-alimentacion" style="margin-top:20px;"></h4>
                 <ul id="lista-recomendaciones"></ul>
             </div>
         </div>
@@ -166,10 +166,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
     
     </div>
     <script>
-        // Agrega automáticamente el primer ítem como título h4 después del párrafo
-        const primerItem = "1. PARÁMETROS DE ALIMENTACIÓN – RECOMENDACIONES";
-        $("#titulo-alimentacion").text(primerItem).show();
-                      
+                
         $(document).ready(function() {
             const recomendacionesAlimentacion = [
                 "Evitar la ingesta de lácteos y sus derivados y reemplazar por leche vegetal sea de COCO o de ALMENDRAS, ideal prepararla en casa con un puñado de almendras en 250 ml de agua y licua, la preparación  dura 1 día.",
@@ -195,10 +192,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             contentHtml += `</form>`;
             $("#contenido-second").html(contentHtml);
 
-            // Mostrar título fijo después del párrafo y lista dinámica
-            const primerItem = "1. PARÁMETROS DE ALIMENTACIÓN – RECOMENDACIONES";
-            $("#titulo-alimentacion").text(primerItem).show();
-
             // Agregar a lista derecha cuando se marca
             $(document).on("change", ".recomendacion-checkbox", function() {
                 const texto = $(this).val();
@@ -217,40 +210,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             });
         });
 
-        // Detectar a qué archivo ir al ítem 2 del plan
-        $(document).on("click", "#btn-continuar-item2", function (e) {
-            e.preventDefault();
-            const segundoItem = $("#plan-lista li:nth-child(2)").text().trim();
-            const palabras = segundoItem.split(" ");
-            const claveBusqueda = palabras.slice(0, 2).join(" ").toUpperCase();
-
-            const mapaRedireccion = {
-                "EJERCICIO PROGRESIVO": "ejercicio_progresivo.php",
-                "EJERCICIOS DE": "ejercicio_relajacion.php",
-                "LIBROS DE": "libros_metabolismo.php",
-                "FASE I": "fase_i.php",
-                "FASE II": "fase_ii.php",
-                "FASE III": "fase_iii.php",
-                "TERAPIA NEURAL": "terapia_neural.php",
-                "CANDIDATO A": "hipnosis.php",
-                "LABORATORIO FUNCIONAL": "laboratorio.php"
-            };
-
-            const archivo = mapaRedireccion[claveBusqueda];
-            if (archivo) {
-                const cedula = "<?php echo $cedula_paciente; ?>";
-
-                // GUARDAR contenido de alimentación para la siguiente fase
-                const contenidoAlimentacion = document.querySelector(".alimentacion").innerHTML;
-                localStorage.setItem("html_alimentacion", contenidoAlimentacion);
-
-                window.location.href = `${archivo}?cedula=${cedula}`;
-            }
-            else {
-                alert("No se encontró una ruta para el ítem 2 del plan.");
-            }
-        });
-
         // Añadir recomendación personalizada
         $(document).on("click", "#agregar-recomendacion", function () {
             const texto = $("#recomendacion-personalizada").val().trim();
@@ -263,7 +222,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             }
         });
 
-
         // Evento para ocultar/mostrar cada contenido de `col-5`
         $(document).on("click", ".toggle-content", function() {
             let target = $(this).data("target");
@@ -274,7 +232,137 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         document.addEventListener('DOMContentLoaded', function () {
             // Restaurar contenido del lado derecho
             if (localStorage.getItem("html_plan")) $('#plan-lista').html(localStorage.getItem("html_plan"));
+            // Mostrar el título correspondiente al paso actual con índice incluido
+            const pasos = parseInt(localStorage.getItem("pasos"));
+            const htmlPlan = localStorage.getItem("html_plan");
+
+            if (!isNaN(pasos) && htmlPlan) {
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = htmlPlan;
+                const liItems = tempDiv.querySelectorAll("li");
+
+                if (liItems[pasos]) {
+                    const contenidoPaso = liItems[pasos].textContent.trim();
+                    const numeroPaso = pasos + 1;
+                    $("#titulo-alimentacion").text(`${numeroPaso}. ${contenidoPaso}`).show();
+                } else {
+                    $("#titulo-alimentacion").hide();
+                }
+            }
         });
+
+        $(document).on("click", "#btn-continuar-item2", function (e) {
+            e.preventDefault();
+            continuarFlujo("alimentacion", "html_alimentacion");
+        });
+
+        function continuarFlujo(nombreClase, variableLocalStorage, alertaSiNo = true) {
+            const pasos = parseInt(localStorage.getItem("pasos") || "0") + 1;
+            localStorage.setItem("pasos", pasos);
+
+            const htmlPlan = localStorage.getItem("html_plan");
+            if (!htmlPlan) {
+                alert("No hay plan cargado.");
+                return;
+            }
+
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = htmlPlan;
+            const liItems = tempDiv.querySelectorAll("li");
+
+            if (liItems[pasos]) {
+                const textoItem = liItems[pasos].textContent.trim();
+                const palabras = textoItem.split(" ");
+                const claveBusqueda = palabras.slice(0, 2).join(" ").toUpperCase();
+
+                const mapaRedireccion = {
+                    "EJERCICIO PROGRESIVO": "ejercicio_progresivo.php",
+                    "EJERCICIOS DE": "ejercicio_relajacion.php",
+                    "LIBROS DE": "libros_metabolismo.php",
+                    "FASE I": "fase_i.php",
+                    "FASE II": "fase_ii.php",
+                    "FASE III": "fase_iii.php",
+                    "TERAPIA NEURAL": "terapia_neural.php",
+                    "CANDIDATO A": "hipnosis.php",
+                    "LABORATORIO FUNCIONAL": "laboratorio.php"
+                };
+
+                const archivo = mapaRedireccion[claveBusqueda];
+                if (archivo) {
+                    const cedula = "<?php echo $cedula_paciente; ?>";
+
+                    // Guardar contenido dinámico
+                    const contenido = document.querySelector(`.${nombreClase}`)?.innerHTML || "";
+                    localStorage.setItem(variableLocalStorage, contenido);
+
+                    // Redirigir
+                    window.location.href = `${archivo}?cedula=${cedula}`;
+                } else if (alertaSiNo) {
+                    alert(`No se encontró una ruta para el ítem del paso ${pasos + 1}: "${claveBusqueda}"`);
+                }
+            } else if (alertaSiNo) {
+                alert("Ya no hay más pasos en el plan.");
+            }
+        }
+
+
+        $(document).on("click", "#btn-retroceder", function (e) {
+            e.preventDefault();
+            retrocederFlujo();
+        });
+
+
+        function retrocederFlujo(alertaSiNo = true) {
+            let pasos = parseInt(localStorage.getItem("pasos") || "0");
+
+            if (pasos <= 0) {
+                if (alertaSiNo) alert("Ya estás en el primer paso del plan.");
+                return;
+            }
+
+            pasos -= 1;
+            localStorage.setItem("pasos", pasos);
+
+            const htmlPlan = localStorage.getItem("html_plan");
+            if (!htmlPlan) {
+                alert("No hay plan cargado.");
+                return;
+            }
+
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = htmlPlan;
+            const liItems = tempDiv.querySelectorAll("li");
+
+            if (liItems[pasos]) {
+                const textoItem = liItems[pasos].textContent.trim();
+                const palabras = textoItem.split(" ");
+                const claveBusqueda = palabras.slice(0, 2).join(" ").toUpperCase();
+
+                const mapaRedireccion = {
+                    "EJERCICIO PROGRESIVO": "ejercicio_progresivo.php",
+                    "EJERCICIOS DE": "ejercicio_relajacion.php",
+                    "LIBROS DE": "libros_metabolismo.php",
+                    "FASE I": "fase_i.php",
+                    "FASE II": "fase_ii.php",
+                    "FASE III": "fase_iii.php",
+                    "TERAPIA NEURAL": "terapia_neural.php",
+                    "CANDIDATO A": "hipnosis.php",
+                    "LABORATORIO FUNCIONAL": "laboratorio.php"
+                };
+
+                const archivo = mapaRedireccion[claveBusqueda];
+                if (archivo) {
+                    const cedula = "<?php echo $cedula_paciente; ?>";
+                    window.location.href = `${archivo}?cedula=${cedula}`;
+                } else if (alertaSiNo) {
+                    alert(`No se encontró una ruta para el paso anterior: "${claveBusqueda}"`);
+                }
+            } else if (alertaSiNo) {
+                alert("No se encontró el paso anterior en el plan.");
+            }
+        }
+
+
 
 </script>
 

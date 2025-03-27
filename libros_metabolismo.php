@@ -174,7 +174,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             </div>
 
             <div class="libros">
-                <h4 id="titulo-libros" style="margin-top:20px;">4. LIBROS DE METABOLISMO Y MANEJO DE EMOCIONES </h4>
+                <h4 id="titulo-libros" style="margin-top:20px;"></h4>
                 <p id="lista-libros"></p>
             </div>
 
@@ -183,14 +183,8 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
     
     </div>
     <script>
-
-        // Agrega automáticamente el primer ítem como título h4 después del párrafo
-        const primerItem = "4.	LIBROS DE METABOLISMO Y MANEJO DE EMOCIONES";
-        $("#titulo-libros").text(primerItem).show();
                       
         $(document).ready(function () {
-            // Mostrar título al cargar
-            $("#titulo-libros").show();
 
             // Agregar recomendación personalizada
             $(document).on("click", "#agregar-recomendacion", function () {
@@ -212,37 +206,56 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         });
 
                     
-        // Detectar a qué archivo ir al ítem 2 del plan
         $(document).on("click", "#btn-continuar-item5", function (e) {
             e.preventDefault();
-            const segundoItem = $("#plan-lista li:nth-child(5)").text().trim();
-            const palabras = segundoItem.split(" ");
-            const claveBusqueda = palabras.slice(0, 2).join(" ").toUpperCase();
 
-            const mapaRedireccion = {
-                "EJERCICIO PROGRESIVO": "ejercicio_progresivo.php",
-                "EJERCICIOS DE": "ejercicio_relajacion.php",
-                "LIBROS DE": "libros_metabolismo.php",
-                "FASE I": "fase_i.php",
-                "FASE II": "fase_ii.php",
-                "FASE III": "fase_iii.php",
-                "TERAPIA NEURAL": "terapia_neural.php",
-                "CANDIDATO A": "hipnosis.php",
-                "LABORATORIO FUNCIONAL": "laboratorio.php"
-            };
+            // Incrementar pasos
+            const pasos = parseInt(localStorage.getItem("pasos") || "0") + 1;
+            localStorage.setItem("pasos", pasos);
 
-            const archivo = mapaRedireccion[claveBusqueda];
-            if (archivo) {
-                const cedula = "<?php echo $cedula_paciente; ?>";
+            const htmlPlan = localStorage.getItem("html_plan");
 
-                // GUARDAR contenido de alimentación para la siguiente fase
-                const contenidolibros = document.querySelector(".libros").innerHTML;
-                localStorage.setItem("html_libros", contenidolibros);
-
-                window.location.href = `${archivo}?cedula=${cedula}`;
+            if (!htmlPlan) {
+                alert("No hay plan cargado.");
+                return;
             }
-            else {
-                alert("No se encontró una ruta para el ítem 5 del plan.");
+
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = htmlPlan;
+            const liItems = tempDiv.querySelectorAll("li");
+
+            if (liItems[pasos]) {
+                const textoItem = liItems[pasos].textContent.trim();
+                const palabras = textoItem.split(" ");
+                const claveBusqueda = palabras.slice(0, 2).join(" ").toUpperCase();
+
+                const mapaRedireccion = {
+                    "EJERCICIO PROGRESIVO": "ejercicio_progresivo.php",
+                    "EJERCICIOS DE": "ejercicio_relajacion.php",
+                    "LIBROS DE": "libros_metabolismo.php",
+                    "FASE I": "fase_i.php",
+                    "FASE II": "fase_ii.php",
+                    "FASE III": "fase_iii.php",
+                    "TERAPIA NEURAL": "terapia_neural.php",
+                    "CANDIDATO A": "hipnosis.php",
+                    "LABORATORIO FUNCIONAL": "laboratorio.php"
+                };
+
+                const archivo = mapaRedireccion[claveBusqueda];
+                if (archivo) {
+                    const cedula = "<?php echo $cedula_paciente; ?>";
+
+                    // Guardar contenido de .libros si existe
+                    const contenidolibros = document.querySelector(".libros")?.innerHTML || "";
+                    localStorage.setItem("html_libros", contenidolibros);
+
+                    // Redirigir
+                    window.location.href = `${archivo}?cedula=${cedula}`;
+                } else {
+                    alert(`No se encontró una ruta para el ítem del paso ${pasos + 1}: "${claveBusqueda}"`);
+                }
+            } else {
+                alert("Ya no hay más pasos en el plan.");
             }
         });
 
@@ -277,7 +290,27 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             $(this).text($(this).text() === "˄" ? "˅" : "˄"); // Cambiar el ícono
         });
 
-        if (localStorage.getItem("html_plan")) $('#plan-lista').html(localStorage.getItem("html_plan"));
+        document.addEventListener('DOMContentLoaded', function () {
+            // Restaurar contenido del lado derecho
+            if (localStorage.getItem("html_plan")) $('#plan-lista').html(localStorage.getItem("html_plan"));
+            // Mostrar el título correspondiente al paso actual con índice incluido
+            const pasos = parseInt(localStorage.getItem("pasos"));
+            const htmlPlan = localStorage.getItem("html_plan");
+
+            if (!isNaN(pasos) && htmlPlan) {
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = htmlPlan;
+                const liItems = tempDiv.querySelectorAll("li");
+
+                if (liItems[pasos]) {
+                    const contenidoPaso = liItems[pasos].textContent.trim();
+                    const numeroPaso = pasos + 1;
+                    $("#titulo-libros").text(`${numeroPaso}. ${contenidoPaso}`).show();
+                } else {
+                    $("#titulo-libros").hide();
+                }
+            }
+        });
 
         // Restaurar recomendaciones alimenticias previas si existen
         if (localStorage.getItem("html_alimentacion")) {

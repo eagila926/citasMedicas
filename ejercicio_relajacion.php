@@ -159,7 +159,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             </div>
 
             <div class="ejercicio-mental">
-                <h4 id="titulo-ejercicio-mental" style="margin-top:20px;">3. EJERCICIOS DE RELAJACIÓN –FORTALECIMIENTO MENTAL</h4>
+                <h4 id="titulo-ejercicio-mental" style="margin-top:20px;"></h4>
                 <ul id="lista-ejercicio-mental"></ul>
             </div>
 
@@ -168,24 +168,19 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
     
     </div>
     <script>
-
-        // Agrega automáticamente el primer ítem como título h4 después del párrafo
-        const primerItem = "3. EJERCICIOS DE RELAJACIÓN –FORTALECIMIENTO MENTAL";
-        $("#titulo-alimentacion").text(primerItem).show();
-                      
+                     
         $(document).ready(function () {
-            // Mostrar título al cargar
-            $("#titulo-ejercicio-mental").show();
 
             // Agregar recomendación personalizada
             $(document).on("click", "#agregar-recomendacion", function () {
                 const texto = $("#recomendacion-personalizada").val().trim();
                 const lista = $("#lista-ejercicio-mental");
 
-                if (texto && !lista.find(`li:contains("${texto}")`).length) {
+                if (texto) {
                     lista.append(`<li>${texto}</li>`);
                     $("#recomendacion-personalizada").val(""); // limpiar input
                 }
+
             });
 
             // Botón para mostrar/ocultar contenido
@@ -197,39 +192,59 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         });
 
                     
-        // Detectar a qué archivo ir al ítem 2 del plan
         $(document).on("click", "#btn-continuar-item4", function (e) {
             e.preventDefault();
-            const segundoItem = $("#plan-lista li:nth-child(4)").text().trim();
-            const palabras = segundoItem.split(" ");
-            const claveBusqueda = palabras.slice(0, 2).join(" ").toUpperCase();
 
-            const mapaRedireccion = {
-                "EJERCICIO PROGRESIVO": "ejercicio_progresivo.php",
-                "EJERCICIOS DE": "ejercicio_relajacion.php",
-                "LIBROS DE": "libros_metabolismo.php",
-                "FASE I": "fase_i.php",
-                "FASE II": "fase_ii.php",
-                "FASE III": "fase_iii.php",
-                "TERAPIA NEURAL": "terapia_neural.php",
-                "CANDIDATO A": "hipnosis.php",
-                "LABORATORIO FUNCIONAL": "laboratorio.php"
-            };
+            // Aumentar pasos
+            const pasos = parseInt(localStorage.getItem("pasos") || "0") + 1;
+            localStorage.setItem("pasos", pasos);
 
-            const archivo = mapaRedireccion[claveBusqueda];
-            if (archivo) {
-                const cedula = "<?php echo $cedula_paciente; ?>";
+            const htmlPlan = localStorage.getItem("html_plan");
 
-                // GUARDAR contenido de alimentación para la siguiente fase
-                const contenidoEjercicio = document.querySelector(".ejercicio-mental").innerHTML;
-                localStorage.setItem("html_ejercicio-mental", contenidoEjercicio);
-
-                window.location.href = `${archivo}?cedula=${cedula}`;
+            if (!htmlPlan) {
+                alert("No hay plan cargado.");
+                return;
             }
-            else {
-                alert("No se encontró una ruta para el ítem 5 del plan.");
+
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = htmlPlan;
+            const liItems = tempDiv.querySelectorAll("li");
+
+            if (liItems[pasos]) {
+                const textoItem = liItems[pasos].textContent.trim();
+                const palabras = textoItem.split(" ");
+                const claveBusqueda = palabras.slice(0, 2).join(" ").toUpperCase();
+
+                const mapaRedireccion = {
+                    "EJERCICIO PROGRESIVO": "ejercicio_progresivo.php",
+                    "EJERCICIOS DE": "ejercicio_relajacion.php",
+                    "LIBROS DE": "libros_metabolismo.php",
+                    "FASE I": "fase_i.php",
+                    "FASE II": "fase_ii.php",
+                    "FASE III": "fase_iii.php",
+                    "TERAPIA NEURAL": "terapia_neural.php",
+                    "CANDIDATO A": "hipnosis.php",
+                    "LABORATORIO FUNCIONAL": "laboratorio.php"
+                };
+
+                const archivo = mapaRedireccion[claveBusqueda];
+                if (archivo) {
+                    const cedula = "<?php echo $cedula_paciente; ?>";
+
+                    // Guardar contenido de ejercicio mental si existe
+                    const contenidoEjercicioMental = document.querySelector(".ejercicio-mental")?.innerHTML || "";
+                    localStorage.setItem("html_ejercicio-mental", contenidoEjercicioMental);
+
+                    // Redirigir
+                    window.location.href = `${archivo}?cedula=${cedula}`;
+                } else {
+                    alert(`No se encontró una ruta para el ítem del paso ${pasos + 1}: "${claveBusqueda}"`);
+                }
+            } else {
+                alert("Ya no hay más pasos en el plan.");
             }
         });
+
 
         // Evento para ocultar/mostrar cada contenido de `col-5`
         $(document).on("click", ".toggle-content", function() {
@@ -238,7 +253,27 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             $(this).text($(this).text() === "˄" ? "˅" : "˄"); // Cambiar el ícono
         });
 
-        if (localStorage.getItem("html_plan")) $('#plan-lista').html(localStorage.getItem("html_plan"));
+        document.addEventListener('DOMContentLoaded', function () {
+            // Restaurar contenido del lado derecho
+            if (localStorage.getItem("html_plan")) $('#plan-lista').html(localStorage.getItem("html_plan"));
+            // Mostrar el título correspondiente al paso actual con índice incluido
+            const pasos = parseInt(localStorage.getItem("pasos"));
+            const htmlPlan = localStorage.getItem("html_plan");
+
+            if (!isNaN(pasos) && htmlPlan) {
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = htmlPlan;
+                const liItems = tempDiv.querySelectorAll("li");
+
+                if (liItems[pasos]) {
+                    const contenidoPaso = liItems[pasos].textContent.trim();
+                    const numeroPaso = pasos + 1;
+                    $("#titulo-ejercicio-mental").text(`${numeroPaso}. ${contenidoPaso}`).show();
+                } else {
+                    $("#titulo-ejercicio-mental").hide();
+                }
+            }
+        });
 
         // Restaurar recomendaciones alimenticias previas si existen
         if (localStorage.getItem("html_alimentacion")) {

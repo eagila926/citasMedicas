@@ -154,7 +154,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         <div class="col-5"> 
             <!-- Botón para ocultar/mostrar "first" -->
             <button class="toggle-content btn btn-sm btn-outline-primary" data-target="#first">˄</button>
-            <h5 style="margin-left: 30px">FASE III</h5>
+            <h5 style="margin-left: 30px">Teapias realizadas en la consulta</h5>
             <div class="first" id="first">
                 <div id="contenido-sexto">
                     <div class="input-group mb-3">
@@ -212,7 +212,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             <div class="tercerafase">
             </div>
 
-            <div class="tercerafase">
+            <div class="terapian">
                 <h4 id="titulo-terapian" style="margin-top:20px;"></h4>
 
                 <div id="lista-terapian"></div>
@@ -263,7 +263,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
                 // GUARDAR contenido de alimentación para la siguiente fase
                 const contenidoTerapian = document.querySelector(".terapian").innerHTML;
-                localStorage.setItem("html_tercerafase", contenidoTerapian);
+                localStorage.setItem("html_terapian", contenidoTerapian);
 
                 window.location.href = `${archivo}?cedula=${cedula}`;
             }
@@ -350,6 +350,15 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             if (divFaseii) {
                 divFaseii.innerHTML = contenidoFaseii;
                 divFaseii.style.marginTop = "20px";
+            }
+        }
+        if (localStorage.getItem("html_tercerafase")) {
+            const contenidoFaseiii = localStorage.getItem("html_tercerafase");
+            const divFaseiii = document.querySelector(".tercerafase");
+
+            if (divFaseiii) {
+                divFaseiii.innerHTML = contenidoFaseiii;
+                divFaseiii.style.marginTop = "20px";
             }
         }
 

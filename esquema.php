@@ -245,8 +245,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             </div>
 
             <div id="contenedor-boton-continuar" class="mt-3 text-center"></div>
-
-            
+            <div id="navegacion-esquema" class="text-end mt-4"></div>            
          </div>
         
         <div class="col-7">
@@ -325,8 +324,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
             // Guardar en localStorage
             localStorage.setItem("orden_esquema", JSON.stringify(rutas));
-
-            actualizarBotones(); // también podrías renombrarlo si solo hay uno
         }
 
         // Mostrar subopciones al seleccionar la fase principal
@@ -374,6 +371,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
             const archivo = mapaRedireccion[claveBusqueda];
             if (archivo) {
+                
                 contenedor.html(`
                     <a href="${archivo}?cedula=<?php echo $cedula_paciente; ?>" class="btn btn-success btn-lg w-100" id="boton-continuar">Continuar</a>
                 `);
@@ -391,19 +389,19 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             if (orden.length > 0) {
                 const actual = window.location.pathname.split("/").pop(); // nombre del archivo actual
                 const indice = orden.indexOf(actual);
-                const pasos = 1;
-                localStorage.setItem("pasos", pasos);
                 if (indice !== -1 && indice < orden.length - 1) {
                     const siguiente = orden[indice + 1];
                     const boton = `<a href="${siguiente}" class="btn btn-primary">Siguiente →</a>`;
                     document.getElementById('navegacion-esquema').innerHTML = boton;
                 } else {
-                    document.getElementById('navegacion-esquema').innerHTML = "<p>Fin del esquema.</p>";
+                    document.getElementById('navegacion-esquema').innerHTML = "";
                 }
             }
         });
 
         function guardarContenidoDerecho() {
+            const pasos = 0;
+            localStorage.setItem("pasos", pasos);
             localStorage.setItem("html_plan", $('#plan-lista').html());
         }
 
