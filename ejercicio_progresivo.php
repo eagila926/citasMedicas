@@ -125,7 +125,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                     </div>
                 </div>
                 <div class="d-flex justify-content-between mt-4">
-                    <button class="btn btn-secondary" onclick="window.history.back()">← Retroceder</button>
+                    <button class="btn btn-secondary" id="btn-retroceder">← Retroceder</button>
                     <a href="#" id="btn-continuar-item3" class="btn btn-success">Continuar →</a>
                 </div>
             </div>
@@ -165,9 +165,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
     
     </div>
     <script>
-
-        
-                      
+     
         $(document).ready(function () {
             // Mostrar título al cargar
             $("#titulo-ejercicio-progre").show();
@@ -182,17 +180,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                     $("#recomendacion-personalizada").val(""); // limpiar input
                 }
             });
-
-            // Restaurar recomendaciones de alimentación si existen
-            if (localStorage.getItem("html_alimentacion")) {
-                const contenidoAlimentacion = localStorage.getItem("html_alimentacion");
-                const divAlimentacion = document.querySelector(".alimentacion");
-
-                if (divAlimentacion) {
-                    divAlimentacion.innerHTML = contenidoAlimentacion;
-                    divAlimentacion.style.marginTop = "20px";
-                }
-            }
 
             // Botón para mostrar/ocultar contenido
             $(document).on("click", ".toggle-content", function () {
