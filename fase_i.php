@@ -180,8 +180,16 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             <h4 style="color:#1E90FF; text-align:center; font-style:italic;">*Esp. TAFV *Medicina Funcional/Biorreguladora *Neuralterapia</h4>
             <p style="color:#1E90FF; text-align:center;">R.M. 54396-08</p>
 
-            <p><strong>Fecha:</strong> <?php echo $fecha_actual; ?> <strong style="margin-left:430px;">Teléfono:</strong> <?php echo $telefono; ?></p>
-            <p><strong>Nombre:</strong> <?php echo $nombre_completo; ?> <strong style="margin-left:350px;">CC:</strong> <?php echo $cedula; ?></p>
+            <div class="row">
+                <div class="col-7">
+                    <p><strong>Fecha:</strong> <?php echo $fecha_actual; ?>
+                    <p><strong>Nombre:</strong> <?php echo $nombre_completo; ?>
+                </div>
+                <div class="col-5">
+                    <strong>Teléfono:</strong> <?php echo $telefono; ?></p>
+                    <strong>CC:</strong> <?php echo $cedula; ?></p>
+                </div>
+            </div>
 
             <p><strong>R/.</strong> Buen día <?php echo $paciente['nombres']; ?>, espero que se encuentre bien, va a iniciar con este esquema que 
             le explico a continuación; el cual se realizará por fases, está individualizado de acuerdo a la consulta inicial; como le expliqué en 
@@ -209,7 +217,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             
             <div class="primerafase">
                 <h4 id="titulo-primerafase" style="margin-top:20px;"></h4> <p style="font-size:25"><strong>Manejo con medicamentos indicados así:</strong></p>
-                <div id="lista-primerafase" contenteditable="true" style="border:1px solid #ccc; padding:10px; border-radius:8px;"></div>
+                <div id="lista-primerafase" contenteditable="true" style="padding:10px; border-radius:8px;"></div>
             </div>
 
         </div>
@@ -408,6 +416,8 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             }
         }
 
+        //continuar flujo
+
         $(document).on("click", "#btn-continuar-item6", function (e) {
             e.preventDefault();
             continuarFlujo("primerafase", "html_primerafase");
@@ -458,7 +468,15 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                     alert(`No se encontró una ruta para el ítem del paso ${pasos + 1}: "${claveBusqueda}"`);
                 }
             } else if (alertaSiNo) {
-                alert("Ya no hay más pasos en el plan.");
+                // Guardar todo el contenido de .col-7 en el localStorage
+                const contenidoResumen = document.querySelector(".col-7")?.innerHTML || "";
+                localStorage.setItem("html_resumen", contenidoResumen);
+
+                alert("Ya no hay más pasos en el plan. Se ha guardado el esquema completo.");
+                
+                // Redireccionar a resumen-esquema.php si lo deseas automáticamente:
+                const cedula = "<?php echo $cedula_paciente; ?>";
+                window.location.href = `resumen-esquema.php?cedula=${cedula}`;
             }
         }
 
