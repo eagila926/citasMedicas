@@ -139,6 +139,25 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         content: "3.";
         color: #DC143C; /* rojo */
     }
+    .text-adaptativo {
+        color: #1E90FF; /* azul */
+    }
+
+    .text-detox {
+        color: #32CD32; /* verde */
+    }
+
+    .text-recuperacion {
+        color: #8A2BE2; /* morado */
+    }
+
+    .text-terreno {
+        color: #DC143C; /* rojo */
+    }
+
+    .text-otro {
+        color: #41464B; /* gris oscuro */
+    }
 
     
 </style>
@@ -172,10 +191,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
         
         <div class="col-7">
-            <h2 style="color:#1E90FF; font-style:italic; font-weight:bold; text-align:center;">Dra. Clara Arciniegas Vergara</h2>
-            <h4 style="color:#1E90FF; text-align:center; font-style:italic;">*Esp. TAFV *Medicina Funcional/Biorreguladora *Neuralterapia</h4>
-            <p style="color:#1E90FF; text-align:center;">R.M. 54396-08</p>
-
+            
             <div class="row">
                 <div class="col-7">
                     <p><strong>Fecha:</strong> <?php echo $fecha_actual; ?>

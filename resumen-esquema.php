@@ -61,37 +61,16 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
     <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="assets/css/icons.css" rel="stylesheet" type="text/css">
     <link href="assets/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
 
     <style>
     body, html {
-        height: 100%;
         margin: 0;
         padding: 0;
-        background: #ffffff;
-
-    }
-
-    .content {
-        min-height: calc(100vh - 100px); /* Deja espacio para el footer */
-        padding-bottom: 120px; /* Evita que el contenido quede debajo del footer */
-    }
-
-    .subopciones { margin-left: 20px; display: none; }
-    
-    .toggle-button {
-        background: none;
-        border: none;
-        font-size: 60px;
-        cursor: pointer;
-        position: absolute;
-        top: 10px;
-        left: 10px;
-    }
-
-    .col-5, .col-7 {
-        max-height: 75vh;
-        overflow-y: auto;
-        padding-right: 5px;
+        background: #eee;
+        font-family: 'Georgia', serif;
     }
 
     #lista-recomendaciones {
@@ -151,6 +130,79 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
+    .text-adaptativo {
+        color: #1E90FF; /* azul */
+    }
+
+    .text-detox {
+        color: #32CD32; /* verde */
+    }
+
+    .text-recuperacion {
+        color: #8A2BE2; /* morado */
+    }
+
+    .text-terreno {
+        color: #DC143C; /* rojo */
+    }
+
+    .text-otro {
+        color: #41464B; /* gris oscuro */
+    }
+
+    .pagina {
+        width: 794px;
+      height: 1122px;
+      margin: 20px auto;
+      padding: 40px;
+      background: white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+      page-break-after: always;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .encabezado {
+        text-align: center;
+        margin-bottom: 10px;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+        padding-bottom: 10px;
+    }
+
+    .contenido {
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+    }
+
+    #btnDescargar {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #btnDescargar:hover {
+      background-color: #0056b3;
+    }
+
+    .dancing-script-doctora {
+        font-family: "Dancing Script", cursive;
+        font-optical-sizing: auto;
+        font-weight: 600;
+        font-style: normal;
+        color:#1E90FF;
+        font-size:40px;
+        text-align:center;
+    }
     
 </style>
     
@@ -158,62 +210,73 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
 <body>
 <?php include 'layout/nav_consulta.php'; ?>
-<div class="wrapper">    
-    <div class="content">
-        <h3 class="text-center">Resumen del Esquema del Paciente</h3>
-        <div id="contenido-resumen" contenteditable="true"></div>
-
-        <div class="text-center mb-3">
-            <button class="btn btn-primary" onclick="exportarPDF()">Exportar a PDF</button>
-            <button class="btn btn-secondary" onclick="window.print()">Vista previa de impresión</button>
-
+    <div class="wrapper">
+        <div id="contenido-pdf"></div>
+        <div style="text-align:center; margin-top: 30px;">
+            <button class="btn btn-primary" id="btnDescargar">Descargar PDF</button>
         </div>
-
-
-        
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const resumen = localStorage.getItem("html_resumen");
-            const contenedor = document.getElementById("contenido-resumen");
+<script>
+    function crearPaginasConEncabezado() {
+    const resumenHTML = localStorage.getItem("html_resumen");
+    const contenedorPDF = document.getElementById("contenido-pdf");
+    contenedorPDF.innerHTML = "";
 
-            if (resumen && contenedor) {
-                contenedor.innerHTML = resumen;
-            } else {
-                contenedor.innerHTML = "<p>No hay contenido disponible para mostrar.</p>";
-            }
-        });
+    if (!resumenHTML) {
+    contenedorPDF.innerHTML = "<p>No hay contenido disponible para mostrar.</p>";
+    return;
+    }
 
-        function exportarPDF() {
-            const contenidoOriginal = document.getElementById("contenido-resumen");
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = resumenHTML;
+    const items = Array.from(tempDiv.children);
 
-            // Clonar el contenido sin estilos de scroll
-            const clon = contenidoOriginal.cloneNode(true);
-            clon.style.maxHeight = "none";
-            clon.style.overflow = "visible";
-            clon.style.height = "auto";
-            clon.style.padding = "30px";
+    const alturaMaxima = 950;
+    let pagina = crearNuevaPagina();
+    contenedorPDF.appendChild(pagina);
+    let contenido = pagina.querySelector(".contenido");
 
-            // Crear un contenedor temporal invisible
-            const contenedorTemporal = document.createElement("div");
-            contenedorTemporal.style.position = "absolute";
-            contenedorTemporal.style.left = "-9999px";
-            contenedorTemporal.appendChild(clon);
-            document.body.appendChild(contenedorTemporal);
+    items.forEach(item => {
+    contenido.appendChild(item);
+    if (contenido.scrollHeight > alturaMaxima) {
+    contenido.removeChild(item);
+    pagina = crearNuevaPagina();
+    contenedorPDF.appendChild(pagina);
+    contenido = pagina.querySelector(".contenido");
+    contenido.appendChild(item);
+    }
+    });
+    }
 
-            const opciones = {
-                margin: 0.10,
-                filename: 'Esquema_Paciente.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, scrollY: 0 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
+    function crearNuevaPagina() {
+    const div = document.createElement("div");
+    div.classList.add("pagina");
+    div.innerHTML = `
+    <div class="encabezado">
+    <h2 class="dancing-script-doctora">Dra. Clara Arciniegas Vergara</h2>
+    <h4 style="color:#1E90FF; margin: 0;">*Esp. TAFV *Medicina Funcional/Biorreguladora *Neuralterapia</h4>
+    <p style="color:#1E90FF; margin: 0;">R.M. 54396-08</p>
+    </div>
+    <div class="contenido"></div>
+    `;
+    return div;
+    }
 
-            html2pdf().from(clon).set(opciones).save().then(() => {
-                document.body.removeChild(contenedorTemporal);
-            });
-        }
-    </script>
+    document.getElementById("btnDescargar").addEventListener("click", function () {
+    crearPaginasConEncabezado();
+        const contenido = document.getElementById("contenido-pdf");
+        const opciones = {
+        margin: 0,
+        filename: 'Esquema_Paciente.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opciones).from(contenido).save();
+    });
+
+    document.addEventListener("DOMContentLoaded", crearPaginasConEncabezado);
+</script>
 
 </div>
 </body>

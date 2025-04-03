@@ -140,6 +140,60 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         color: #DC143C; /* rojo */
     }
 
+    .checkbox-color {
+        padding: 8px;
+        border-radius: 6px;
+        display: inline-block;
+        width: 100%;
+        font-weight: bold;
+    }
+
+    .manejo-adaptativo {
+        background-color: #E2E3E5; /* verde suave */
+        color: #1E90FF;
+    }
+
+    .detox {
+        background-color: #E2E3E5; /* amarillo suave */
+        color: #32CD32;
+    }
+
+    .recuperacion {
+        background-color: #E2E3E5; /* rosado claro */
+        color: #8A2BE2;
+    }
+
+    .terreno {
+        background-color: #E2E3E5; /* celeste */
+        color: #DC143C;
+    }
+
+    .otro {
+        background-color: #E2E3E5; /* gris claro */
+        color: #41464B;
+    }
+
+    .text-adaptativo {
+        color: #1E90FF; /* azul */
+    }
+
+    .text-detox {
+        color: #32CD32; /* verde */
+    }
+
+    .text-recuperacion {
+        color: #8A2BE2; /* morado */
+    }
+
+    .text-terreno {
+        color: #DC143C; /* rojo */
+    }
+
+    .text-otro {
+        color: #41464B; /* gris oscuro */
+    }
+
+
     
 </style>
     
@@ -157,13 +211,13 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             <h5 style="margin-left: 30px">MANEJO DE MEDICAMENTOS</h5>
             <div class="first" id="first">
                 <div id="contenido-quinto">
-                    <div id="checkboxes-manejo" class="mb-3">
-                        <label><input type="checkbox" class="fase-checkbox" value="MANEJO ADAPTATIVO INICIAL"> MANEJO ADAPTATIVO INICIAL</label><br>
-                        <label><input type="checkbox" class="fase-checkbox" value="DETOXIFICACIÓN Y REMOCIÓN MICROBIOLÓGICA ORAL"> DETOXIFICACIÓN Y REMOCIÓN MICROBIOLÓGICA ORAL</label><br>
-                        <label><input type="checkbox" class="fase-checkbox" value="RECUPERACIÓN DE LA MUCOSA Y BARRERA GASTROINTESTINAL"> RECUPERACIÓN DE LA MUCOSA Y BARRERA GASTROINTESTINAL</label><br>
-                        <label><input type="checkbox" class="fase-checkbox" value="MANEJO DE TERRENO (D. I - VI)"> MANEJO DE TERRENO (D. I - VI)</label><br>
-                        <label><input type="checkbox" class="fase-checkbox" value="OTRO PRODUCTO"> OTRO PRODUCTO</label>
-                    </div>
+                <div id="checkboxes-manejo" class="mb-3">
+                    <label class="checkbox-color manejo-adaptativo"><input type="checkbox" class="fase-checkbox" value="MANEJO ADAPTATIVO INICIAL"> MANEJO ADAPTATIVO INICIAL</label><br>
+                    <label class="checkbox-color detox"><input type="checkbox" class="fase-checkbox" value="DETOXIFICACIÓN Y REMOCIÓN MICROBIOLÓGICA ORAL"> DETOXIFICACIÓN Y REMOCIÓN MICROBIOLÓGICA ORAL</label><br>
+                    <label class="checkbox-color recuperacion"><input type="checkbox" class="fase-checkbox" value="RECUPERACIÓN DE LA MUCOSA Y BARRERA GASTROINTESTINAL"> RECUPERACIÓN DE LA MUCOSA Y BARRERA GASTROINTESTINAL</label><br>
+                    <label class="checkbox-color terreno"><input type="checkbox" class="fase-checkbox" value="MANEJO DE TERRENO (D. I - VI)"> MANEJO DE TERRENO (D. I - VI)</label><br>
+                    <label class="checkbox-color otro"><input type="checkbox" class="fase-checkbox" value="OTRO PRODUCTO"> OTRO PRODUCTO</label>
+                </div>
                     <div id="buscadores-productos"></div>                    
                 </div>
 
@@ -176,10 +230,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
         
         <div class="col-7">
-            <h2 style="color:#1E90FF; font-style:italic; font-weight:bold; text-align:center;">Dra. Clara Arciniegas Vergara</h2>
-            <h4 style="color:#1E90FF; text-align:center; font-style:italic;">*Esp. TAFV *Medicina Funcional/Biorreguladora *Neuralterapia</h4>
-            <p style="color:#1E90FF; text-align:center;">R.M. 54396-08</p>
-
             <div class="row">
                 <div class="col-7">
                     <p><strong>Fecha:</strong> <?php echo $fecha_actual; ?>
@@ -240,18 +290,29 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                 if (!resumen.find(`.item-fase:contains("${valor}")`).length) {
                     const claseSanitizada = generarClaseDesdeTexto(valor);
                     let claseTema = ""; // clase extra para estilo por palabra clave
+                    let claseColor = ""; // clase para el color del <strong>
 
                     const normalizado = valor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-                    if (normalizado.includes("adaptativo")) claseTema = "fase-adaptativo";
-                    else if (normalizado.includes("detox")) claseTema = "fase-detoxificacion";
-                    else if (normalizado.includes("recuperacion")) claseTema = "fase-recuperacion";
-                    else if (normalizado.includes("terreno")) claseTema = "fase-terreno";
-
+                    if (normalizado.includes("adaptativo")) {
+                        claseTema = "fase-adaptativo";
+                        claseColor = "text-adaptativo";
+                    } else if (normalizado.includes("detox")) {
+                        claseTema = "fase-detoxificacion";
+                        claseColor = "text-detox";
+                    } else if (normalizado.includes("recuperacion")) {
+                        claseTema = "fase-recuperacion";
+                        claseColor = "text-recuperacion";
+                    } else if (normalizado.includes("terreno")) {
+                        claseTema = "fase-terreno";
+                        claseColor = "text-terreno";
+                    } else if (normalizado.includes("otro producto")) {
+                        claseColor = "text-otro";
+                    }
 
                     resumen.append(`
                         <div class="item-fase">
-                            <strong>${valor}</strong>
+                            <strong class="${claseColor}">${valor}</strong>
                             <ul class="productos-${claseSanitizada} lista-fase-personalizada ${claseTema}"></ul>
                         </div>
                     `);

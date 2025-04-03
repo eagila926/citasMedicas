@@ -133,10 +133,6 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
         
         <div class="col-7">
-            <h2 style="color:#1E90FF; font-style:italic; font-weight:bold; text-align:center;">Dra. Clara Arciniegas Vergara</h2>
-            <h4 style="color:#1E90FF; text-align:center; font-style:italic;">*Esp. TAFV *Medicina Funcional/Biorreguladora *Neuralterapia</h4>
-            <p style="color:#1E90FF; text-align:center;">R.M. 54396-08</p>
-
             <div class="row">
                 <div class="col-7">
                     <p><strong>Fecha:</strong> <?php echo $fecha_actual; ?>
@@ -178,16 +174,21 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             // Mostrar título al cargar
             $("#titulo-ejercicio-progre").show();
 
-            // Agregar recomendación personalizada
+            function escapeJquerySelector(texto) {
+                return texto.replace(/["\\]/g, "\\$&"); // Escapa comillas dobles y barra invertida
+            }
+
             $(document).on("click", "#agregar-recomendacion", function () {
                 const texto = $("#recomendacion-personalizada").val().trim();
                 const lista = $("#lista-ejercicio-progre");
 
-                if (texto && !lista.find(`li:contains("${texto}")`).length) {
+                // Solo agregar si no existe ya un <p> con ese contenido (escapado para selector)
+                if (texto && !lista.find(`li:contains("${escapeJquerySelector(texto)}")`).length) {
                     lista.append(`<p>${texto}</p>`);
                     $("#recomendacion-personalizada").val(""); // limpiar input
                 }
             });
+
 
             // Botón para mostrar/ocultar contenido
             $(document).on("click", ".toggle-content", function () {
