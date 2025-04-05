@@ -152,31 +152,32 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
 
     .pagina {
         width: 794px;
-      height: 1122px;
-      margin: 20px auto;
-      padding: 40px;
-      background: white;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      box-sizing: border-box;
-      page-break-after: always;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+        height: 1100px;
+        margin: 5px auto;
+        padding: 1px 40px 40px 40px; /* padding base para todas las páginas */
+        background: white;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        box-sizing: border-box;
+        page-break-inside: avoid;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .primera-pagina {
+        padding-top: 3px; /* Ajusta según cuánto necesites empujar hacia abajo */
     }
 
     .encabezado {
         text-align: center;
         margin-bottom: 10px;
-        position: sticky;
-        top: 0;
         background: white;
-        z-index: 10;
-        padding-bottom: 10px;
+        padding-bottom: 5px;
     }
 
     .contenido {
         border-top: 1px solid #ccc;
-        padding-top: 10px;
+        padding-top: 5px;
     }
 
     #btnDescargar {
@@ -216,67 +217,90 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             <button class="btn btn-primary" id="btnDescargar">Descargar PDF</button>
         </div>
     </div>
-<script>
-    function crearPaginasConEncabezado() {
+    <script>
+function crearPaginasConEncabezado() {
     const resumenHTML = localStorage.getItem("html_resumen");
     const contenedorPDF = document.getElementById("contenido-pdf");
     contenedorPDF.innerHTML = "";
 
     if (!resumenHTML) {
-    contenedorPDF.innerHTML = "<p>No hay contenido disponible para mostrar.</p>";
-    return;
+        contenedorPDF.innerHTML = "<p>No hay contenido disponible para mostrar.</p>";
+        return;
     }
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = resumenHTML;
     const items = Array.from(tempDiv.children);
 
-    const alturaMaxima = 950;
-    let pagina = crearNuevaPagina();
+    const alturaMaxima = 995;
+    let pagina = crearNuevaPagina(true); // ✅ primera página
     contenedorPDF.appendChild(pagina);
     let contenido = pagina.querySelector(".contenido");
 
     items.forEach(item => {
-    contenido.appendChild(item);
-    if (contenido.scrollHeight > alturaMaxima) {
-    contenido.removeChild(item);
-    pagina = crearNuevaPagina();
-    contenedorPDF.appendChild(pagina);
-    contenido = pagina.querySelector(".contenido");
-    contenido.appendChild(item);
-    }
+        if (item.textContent.trim() !== "" || item.querySelector("*")) {
+            contenido.appendChild(item);
+            if (contenido.scrollHeight > alturaMaxima) {
+                contenido.removeChild(item);
+                pagina = crearNuevaPagina(false); // ✅ siguientes páginas
+                contenedorPDF.appendChild(pagina);
+                contenido = pagina.querySelector(".contenido");
+                contenido.appendChild(item);
+            }
+        }
     });
-    }
+}
 
-    function crearNuevaPagina() {
+function crearNuevaPagina(esPrimera = false) {
     const div = document.createElement("div");
     div.classList.add("pagina");
+    if (esPrimera) div.classList.add("primera-pagina");
+
     div.innerHTML = `
-    <div class="encabezado">
-    <h2 class="dancing-script-doctora">Dra. Clara Arciniegas Vergara</h2>
-    <h4 style="color:#1E90FF; margin: 0;">*Esp. TAFV *Medicina Funcional/Biorreguladora *Neuralterapia</h4>
-    <p style="color:#1E90FF; margin: 0;">R.M. 54396-08</p>
-    </div>
-    <div class="contenido"></div>
+        <div class="encabezado">
+            <h2 class="dancing-script-doctora">Dra. Clara Arciniegas Vergara</h2>
+            <h4 style="color:#1E90FF; margin: 0;">*Esp. TAFV *Medicina Funcional/Biorreguladora *Neuralterapia</h4>
+            <p style="color:#1E90FF; margin: 0;">R.M. 54396-08</p>
+        </div>
+        <div class="contenido"></div>
     `;
     return div;
-    }
+}
 
-    document.getElementById("btnDescargar").addEventListener("click", function () {
+document.getElementById("btnDescargar").addEventListener("click", function () {
     crearPaginasConEncabezado();
+    setTimeout(() => {
         const contenido = document.getElementById("contenido-pdf");
-        const opciones = {
-        margin: 0,
-        filename: 'Esquema_Paciente.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf().set(opciones).from(contenido).save();
-    });
 
-    document.addEventListener("DOMContentLoaded", crearPaginasConEncabezado);
+        const opt = {
+            margin: 5,
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            html2canvas: { scrollY: 0 }
+        };
+
+        // Crear PDF como Blob
+        html2pdf().set(opt).from(contenido).outputPdf('blob').then(function (pdfBlob) {
+            const formData = new FormData();
+            formData.append("archivo", pdfBlob, "<?php echo $_GET['cedula'] . $fecha_actual; ?>.pdf");
+
+            fetch("guardar_pdf.php", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (response.ok) {
+                    alert("PDF guardado correctamente en el servidor.");
+                } else {
+                    alert("Error al guardar el PDF.");
+                }
+            });
+        });
+    }, 1500);
+});
+
+document.addEventListener("DOMContentLoaded", crearPaginasConEncabezado);
 </script>
+
+
 
 </div>
 </body>
