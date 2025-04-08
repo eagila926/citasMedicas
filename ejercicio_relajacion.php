@@ -119,10 +119,22 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             <h5 style="margin-left: 30px">EJERCICIOS DE RELAJACIÓN –FORTALECIMIENTO MENTAL</h5>
             <div class="first" id="first">
                 <div id="contenido-cuarto">
-                    <div class="input-group mb-3">
-                        <textarea type="text" class="form-control" id="recomendacion-personalizada" placeholder="Escribe una recomendación"></textarea>
-                        <button class="btn btn-primary" type="button" id="agregar-recomendacion">Agregar</button>
-                    </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input recomendacion-checkbox" type="checkbox" value="CONTROL DE RESPIRACIÓN: Inspira aire profundamente, retiene por 1, 2, 3, 4 segundos y exhala lentamente, repite el ejercicio durante 5 minutos en las mañanas al despertar y en las noches antes de acostarse. Que esté sea el momento para agradecer por todo lo que ha recibido en la vida.">
+                        CONTROL DE RESPIRACIÓN: Inspira aire profundamente, retiene por 1, 2, 3, 4 segundos y exhala lentamente, repite el ejercicio durante 5 minutos en las mañanas al despertar y en las noches antes de acostarse. Que esté sea el momento para agradecer por todo lo que ha recibido en la vida.
+                    </label>
+                    <label class="form-check mt-2">
+                        <input class="form-check-input recomendacion-checkbox" type="checkbox" value="LECTURA DIARIA: Realizar lectura diaria durante 15 minutos mínimo en las mañanas al despertar y en las noches antes de acostarse. Estas acciones deben convertirse en un hábito como lo son bañarse, cepillar los dientes, desayunar, etc. por lo tanto se debe sacar el tiempo para realizarlos, por eso son tiempos cortos inicialmente, luego se extienden.">
+                        LECTURA DIARIA: Realizar lectura diaria durante 15 minutos mínimo en las mañanas al despertar y en las noches antes de acostarse. Estas acciones deben convertirse en un hábito como lo son bañarse, cepillar los dientes, desayunar, etc. por lo tanto se debe sacar el tiempo para realizarlos, por eso son tiempos cortos inicialmente, luego se extienden.
+                    </label>
+                </div>
+
+                <div class="input-group mb-3">
+                    <textarea type="text" class="form-control" id="recomendacion-personalizada" placeholder="Escribe una recomendación"></textarea>
+                    <button class="btn btn-primary" type="button" id="agregar-recomendacion">Agregar</button>
+                </div>
+
                 </div>
                 <div class="d-flex justify-content-between mt-4">
                     <button class="btn btn-secondary" id="btn-retroceder">← Retroceder</button>
@@ -196,6 +208,19 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                 $(this).text($(this).text() === "˄" ? "˅" : "˄");
             });
         });    
+        // Agregar recomendaciones desde los checkboxes seleccionados
+        $(document).on("change", ".recomendacion-checkbox", function () {
+            const texto = $(this).val().trim();
+            const lista = $("#lista-ejercicio-mental");
+
+            if (this.checked && texto && !lista.find(`li:contains("${texto}")`).length) {
+                lista.append(`<li>${texto}</li>`);
+            } else if (!this.checked) {
+                // Si se desmarca, se remueve del listado
+                lista.find(`li:contains("${texto}")`).remove();
+            }
+        });
+
         
         document.addEventListener('DOMContentLoaded', function () {
             // Restaurar contenido del lado derecho

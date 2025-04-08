@@ -2,7 +2,7 @@
 include 'layout/config.php'; // Conexión a la base de datos
 
 // Obtener la fecha actual
-$fecha_actual = date("_d F Y_");
+$fecha_actual = date("Y-m-d");
 
 // Verificar si la cédula está en la URL
 if (!isset($_GET['cedula'])) {
@@ -281,7 +281,7 @@ document.getElementById("btnDescargar").addEventListener("click", function () {
         // Crear PDF como Blob
         html2pdf().set(opt).from(contenido).outputPdf('blob').then(function (pdfBlob) {
             const formData = new FormData();
-            formData.append("archivo", pdfBlob, "<?php echo $_GET['cedula'] . $fecha_actual; ?>.pdf");
+            formData.append("archivo", pdfBlob, "<?php echo $_GET['cedula'] . '_' . $fecha_actual; ?>.pdf");
 
             fetch("guardar_pdf.php", {
                 method: "POST",
@@ -289,6 +289,8 @@ document.getElementById("btnDescargar").addEventListener("click", function () {
             }).then(response => {
                 if (response.ok) {
                     alert("PDF guardado correctamente en el servidor.");
+                    // Redirigir a receta.php
+                    window.location.href = "receta.php?cedula=<?php echo $_GET['cedula']; ?>";
                 } else {
                     alert("Error al guardar el PDF.");
                 }
@@ -296,6 +298,7 @@ document.getElementById("btnDescargar").addEventListener("click", function () {
         });
     }, 1500);
 });
+
 
 document.addEventListener("DOMContentLoaded", crearPaginasConEncabezado);
 </script>

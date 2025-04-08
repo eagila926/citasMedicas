@@ -191,11 +191,27 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                                 <label for="sub-fase1-2">GASTROINTESTINAL</label>
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase2-3" value="INMUNOLÓGICO Y OSTEOMUSCULAR">
-                                <label for="sub-fase1-3">INMUNOLÓGICO Y OSTEOMUSCULAR</label>
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase2-3" value="INMUNOLÓGICO">
+                                <label for="sub-fase1-3">INMUNOLÓGICO</label>
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase2-3" value="(una vez se haya preparado el terreno)">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase2-4" value="OSTEOMUSCULAR">
+                                <label for="sub-fase1-3">OSTEOMUSCULAR</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase2-5" value="GÉNITO URINARIO">
+                                <label for="sub-fase1-3">GÉNITO URINARIO</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase2-6" value="RESPIRATORIO">
+                                <label for="sub-fase1-3">RESPIRATORIO</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase2-7" value="SISTEMA NERVIOSO CENTRAL">
+                                <label for="sub-fase1-3">SISTEMA NERVIOSO CENTRAL</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase2-8" value="(una vez se haya preparado el terreno)">
                                 <label for="sub-fase1-4">(una vez se haya preparado el terreno)</label>
                             </div>
                         </div>
@@ -223,9 +239,25 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                                 <label for="sub-fase3-4">OSTEOMUSCULAR</label>
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase3-4" value="REVITALIZACIÓN MASCULINA">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase3-4" value="OSTEOMUSCULAR">
+                                <label for="sub-fase3-4">GÉNITO URINARIO</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase3-5" value="OSTEOMUSCULAR">
+                                <label for="sub-fase3-4">RESPIRATORIO</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase3-6" value="OSTEOMUSCULAR">
+                                <label for="sub-fase3-4">SISTEMA NERVIOSO CENTRAL</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase3-7" value="REVITALIZACIÓN MASCULINA">
                                 <label for="sub-fase3-5">REVITALIZACIÓN MASCULINA</label>
-                            </div>                 
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input sub-checkbox" id="sub-fase3-8" value="REVITALIZACIÓN MASCULINA">
+                                <label for="sub-fase3-5">REVITALIZACIÓN FEMENINA</label>
+                            </div>
                         </div>
 
                         <!-- FASE IV -->

@@ -175,9 +175,10 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             <button class="toggle-content btn btn-sm btn-outline-primary" data-target="#first">˄</button>
             <h5 style="margin-left: 30px">Laboratorio Funcional</h5>
             <div class="first" id="first">
-                <div id="contenido-laboratorio">
-
-                </div>
+                <div id="contenido-laboratorio"></div>
+                <!-- AYUDAS DIAGNÓSTICAS -->
+                <h5 class="mt-4">Ayudas Diagnósticas</h5>
+                <div id="ayudas-diagnosticas" style="margin-bottom: 20px;"></div>
 
                 <div class="d-flex justify-content-between mt-4">
                     <button class="btn btn-secondary" id="btn-retroceder">← Retroceder</button>
@@ -262,6 +263,7 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             "Creatinina sérica",
             "Nitrógeno Ureico",
             "Proteína C Reactiva",
+            "Lactato Deshidrogenasa (LDH)",
             "Velocidad de sedimentación globular",
             "Colesterol total",
             "Colesterol HDL",
@@ -271,21 +273,128 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
             "T3-T4 Libre",
             "Anticuerpos anti tiroideos (TPO – ATG)",
             "Transaminasas ALT",
-            "AST",
+            "Transaminasa AST",
             "Fosfatasa Alcalina",
             "Bilirrubina total y directa",
             "Vitamina D3 (25-OH Calciferol)",
             "Niveles de Vitamina B12",
-            "Ferritina",
+            "Niveles de Ferritina",
             "Saturación de Transferrina",
-            "Hierro sérico",
+            "Niveles Hierro sérico",
             "Niveles de Homocisteina",
             "Niveles de Testosterona",
             "Coproscópico y sangre oculta en heces",
             "Uroanálisis",
             "Antígeno Prostático",
-            "Ecografía de Tiroides"
+            "Niveles de Vitamina B12",
+            "Perfil Lipídico completo (Colesterol total, HDL, LDL, Triglicéridos)"
         ];
+
+        // ==== AYUDAS DIAGNÓSTICAS ====
+
+        const ayudasDiagnosticas = [
+            "Ecografía mamaria bilateral",
+            "Ecografía De Hombro Bilateral (Manguito Rotador)",
+            "Ecografía de Tiroides",
+            "Endoscopia De Vías Digestivas Superiores",
+            "Colonoscopia Bajo Sedación",
+            "Rayos X De Tórax Pa Y Lateral"
+        ];
+
+        const contenedorAyudas = document.getElementById("ayudas-diagnosticas");
+
+        // Crear grupo contenedor
+        const divGrupo = document.createElement("div");
+        divGrupo.classList.add("mb-3");
+
+        // Botón para expandir/contraer
+        const btnToggle = document.createElement("button");
+        btnToggle.className = "btn btn-outline-secondary btn-sm mb-2";
+        btnToggle.textContent = "Mostrar/Ocultar Ayudas Diagnósticas";
+        btnToggle.onclick = () => {
+            listaAyudas.style.display = (listaAyudas.style.display === "none") ? "block" : "none";
+        };
+
+        divGrupo.appendChild(btnToggle);
+
+        // Lista de checkboxes
+        const listaAyudas = document.createElement("div");
+        listaAyudas.id = "lista-ayudas";
+        listaAyudas.style.display = "none";
+
+        ayudasDiagnosticas.forEach((ayuda, index) => {
+            const div = document.createElement("div");
+            div.className = "form-check";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = "form-check-input";
+            checkbox.id = `ayuda-${index}`;
+            checkbox.value = ayuda;
+
+            const label = document.createElement("label");
+            label.className = "form-check-label";
+            label.htmlFor = checkbox.id;
+            label.textContent = ayuda;
+
+            checkbox.addEventListener("change", actualizarListaLaboratorio);
+
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            listaAyudas.appendChild(div);
+        });
+
+        // Campo personalizado
+        const divPersonalizado = document.createElement("div");
+        divPersonalizado.className = "input-group mt-3";
+
+        const inputPersonalizado = document.createElement("input");
+        inputPersonalizado.type = "text";
+        inputPersonalizado.className = "form-control";
+        inputPersonalizado.placeholder = "Agregar otra ayuda diagnóstica...";
+
+        const btnAgregar = document.createElement("button");
+        btnAgregar.className = "btn btn-primary";
+        btnAgregar.textContent = "Agregar";
+
+        btnAgregar.onclick = () => {
+            const valor = inputPersonalizado.value.trim();
+            if (valor) {
+                const id = `personalizado-${Date.now()}`;
+                const div = document.createElement("div");
+                div.className = "form-check";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "form-check-input";
+                checkbox.id = id;
+                checkbox.value = valor;
+                checkbox.checked = true;
+
+                const label = document.createElement("label");
+                label.className = "form-check-label";
+                label.htmlFor = id;
+                label.textContent = valor;
+
+                checkbox.addEventListener("change", actualizarListaLaboratorio);
+
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                listaAyudas.appendChild(div);
+
+                actualizarListaLaboratorio();
+                inputPersonalizado.value = "";
+            }
+        };
+
+        divPersonalizado.appendChild(inputPersonalizado);
+        divPersonalizado.appendChild(btnAgregar);
+
+        // Armar estructura
+        divGrupo.appendChild(listaAyudas);
+        divGrupo.appendChild(divPersonalizado);
+        contenedorAyudas.appendChild(divGrupo);
+
 
         const contenedorLaboratorio = document.getElementById("contenido-laboratorio");
         const listaLaboratorio = document.getElementById("lista-laboratorio");
@@ -318,18 +427,54 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
         // Función para actualizar la lista al lado derecho
         function actualizarListaLaboratorio() {
             listaLaboratorio.innerHTML = "";
-            const seleccionados = document.querySelectorAll("#contenido-laboratorio input[type='checkbox']:checked");
 
-            if (seleccionados.length > 0) {
+            const seleccionados = document.querySelectorAll("input[type='checkbox']:checked");
+
+            const examenesSeleccionados = [];
+            const ayudasSeleccionadas = [];
+
+            seleccionados.forEach(chk => {
+                const texto = chk.value;
+
+                // Clasificamos por si pertenece al array de exámenes
+                if (examenes.includes(texto)) {
+                    examenesSeleccionados.push(texto);
+                } else {
+                    ayudasSeleccionadas.push(texto);
+                }
+            });
+
+            // Crear y mostrar lista de exámenes
+            if (examenesSeleccionados.length > 0) {
+                const tituloExamenes = document.createElement("h5");
+                tituloExamenes.textContent = "Laboratorio Funcional";
+                listaLaboratorio.appendChild(tituloExamenes);
+
                 const ul = document.createElement("ul");
-                seleccionados.forEach(chk => {
+                examenesSeleccionados.forEach(examen => {
                     const li = document.createElement("li");
-                    li.textContent = chk.value;
+                    li.textContent = examen;
+                    ul.appendChild(li);
+                });
+                listaLaboratorio.appendChild(ul);
+            }
+
+            // Crear y mostrar lista de ayudas diagnósticas
+            if (ayudasSeleccionadas.length > 0) {
+                const tituloAyudas = document.createElement("h5");
+                tituloAyudas.textContent = "Ayudas Diagnósticas";
+                listaLaboratorio.appendChild(tituloAyudas);
+
+                const ul = document.createElement("ul");
+                ayudasSeleccionadas.forEach(ayuda => {
+                    const li = document.createElement("li");
+                    li.textContent = ayuda;
                     ul.appendChild(li);
                 });
                 listaLaboratorio.appendChild(ul);
             }
         }
+
 
         // Evento para ocultar/mostrar cada contenido de `col-5`
         $(document).on("click", ".toggle-content", function() {
@@ -498,6 +643,9 @@ $libros = array_filter(scandir($carpeta_libros), function($file) use ($carpeta_l
                 }
             } else if (alertaSiNo) {
                 // Guardar todo el contenido de .col-7 en el localStorage
+                const contenidoLab = document.querySelector(".laboratorio")?.innerHTML || "";
+                localStorage.setItem("html_laboratorio", contenidoLab);
+
                 const contenidoResumen = document.querySelector(".col-7")?.innerHTML || "";
                 localStorage.setItem("html_resumen", contenidoResumen);
 

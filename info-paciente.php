@@ -72,9 +72,15 @@ $result_consultas = $stmt->fetchAll();
 
     <div id="contenedor-consultas">
         <h2>Consultas anteriores</h2>
-        <button class="btn btn-secondary" id="btn-nueva-consulta" data-bs-toggle="modal" data-bs-target="#modalNuevaConsulta">
-            Continuar con la consulta
-        </button>
+        <?php $tieneConsultas = !empty($result_consultas); ?>
+
+        <?php if ($tieneConsultas): ?>
+            <button class="btn btn-secondary" id="btn-control" data-bs-toggle="modal" data-bs-target="#modalNuevaConsulta">Control</button>
+            <button class="btn btn-secondary" id="btn-nueva-consulta" disabled>Consulta primera vez</button>
+        <?php else: ?>
+            <button class="btn btn-secondary" id="btn-nueva-consulta" data-bs-toggle="modal" data-bs-target="#modalNuevaConsulta">Consulta primera vez</button>
+        <?php endif; ?>
+
 
         <h2>Detalle de consultas</h2>
         <div class="table-rep-plugin">
@@ -412,6 +418,8 @@ $result_consultas = $stmt->fetchAll();
                         <label for="archivo" class="form-label">Ruta del Archivo:</label>
                         <input type="text" name="archivo" id="archivo" class="form-control" readonly>
                     </div>
+                    <input type="hidden" name="primeraConsulta" id="primeraConsulta" value="true">
+
 
                     <button type="submit" class="btn btn-primary">Guardar Consulta</button>
                 </form>
@@ -466,6 +474,19 @@ $result_consultas = $stmt->fetchAll();
         });
     });
 </script>
+
+<script>
+    $(document).ready(function () {
+        $("#btn-nueva-consulta").click(function () {
+            $("#primeraConsulta").val("true");
+        });
+
+        $("#btn-control").click(function () {
+            $("#primeraConsulta").val("false");
+        });
+    });
+</script>
+
 
 </body>
 </html>

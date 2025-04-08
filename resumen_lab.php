@@ -158,7 +158,7 @@ $fecha_actual = date("d/m/Y");
 
     <script>
         // Recuperar contenido desde localStorage y agregarlo al div
-        const fase1 = localStorage.getItem("html_primerafase");
+        const fase1 = localStorage.getItem("html_laboratorio");
         if (fase1) {
             const contenedor = document.getElementById("fase1-contenido");
             contenedor.innerHTML = fase1;
