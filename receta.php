@@ -99,11 +99,13 @@ $fecha_actual = date("d/m/Y");
     .a4-preview {
         width: 210mm;
         min-height: 297mm;
-        padding: 20mm;
+        padding: 10mm;
         margin: 5px auto;
         background: white;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
         box-sizing: border-box;
+        overflow: hidden;
+        position: relative;
     }
 
     @media print {
@@ -116,17 +118,28 @@ $fecha_actual = date("d/m/Y");
         }
     }
 
-    /* Forzar salto de página antes de elementos largos si es necesario */
     .page-break {
         page-break-before: always;
+    }
+
+    #a4-exportar * {
+        background: white !important;
+        box-shadow: none !important;
+    }
+
+    #a4-exportar .row, 
+    #a4-exportar .col-8, 
+    #a4-exportar .col-4 {
+        display: block !important;
+        width: 100% !important;
     }
 
     </style>
 </head>
 <body>
     <?php include 'layout/nav_consulta.php'; ?>
-    <div class="content a4-preview">
-        <div class="encabezado" style="text-align: center;">
+    <div class="content a4-preview" id="resumenReceta">
+        <div class="encabezado" style="text-align: center; margin-top:-5px">
             <h2 class="dancing-script-doctora">Dra. Clara Arciniegas Vergara</h2>
             <h5 style="color:#1E90FF; margin: 0;">*Esp. TAFV *Medicina Funcional/Biorreguladora *Neuralterapia</h5>
             <p style="color:#1E90FF; margin: 0;">R.M. 54396-08</p>
@@ -144,9 +157,7 @@ $fecha_actual = date("d/m/Y");
                 </div>
             </div>
         </div>
-
         <hr>
-
         <div id="fase1-contenido">
             <!-- Aquí se insertará el contenido desde localStorage -->
         </div>
@@ -182,36 +193,55 @@ $fecha_actual = date("d/m/Y");
         document.getElementById("guardarContinuar").addEventListener("click", function () {
             const cedula = "<?= $cedula ?>";
             const fecha = "<?= date('Ymd') ?>";
-            const nombreArchivo = `${cedula}_${fecha}.pdf`;
+            const nombreArchivo = `receta_${cedula}_${fecha}.pdf`;
 
-            const elemento = document.querySelector(".a4-preview");
+            setTimeout(() => {
+                const contenidoOriginal = document.getElementById("resumenReceta");
+                const contenidoClonado = contenidoOriginal.cloneNode(true);
+                contenidoClonado.id = "a4-exportar";
 
-            const opt = {
-                margin:       0,
-                filename:     nombreArchivo,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+                contenidoClonado.style.width = "210mm";
+                contenidoClonado.style.minHeight = "297mm";
+                contenidoClonado.style.padding = "20mm";
+                contenidoClonado.style.margin = "0";
+                contenidoClonado.style.background = "white";
+                contenidoClonado.style.overflow = "hidden";
 
-            html2pdf().set(opt).from(elemento).outputPdf('blob').then(function (blob) {
-                const formData = new FormData();
-                formData.append("pdf", blob, nombreArchivo);
-                
-                fetch("guardar_pdf_receta.php", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error("Error al guardar PDF");
-                    return response.text();
-                })
-                .then(() => {
-                    window.location.href = "resumen_lab.php?cedula=" + encodeURIComponent(cedula);
-                })
-                .catch(err => alert("Ocurrió un error: " + err.message));
-            });
+                // Quitamos las clases que deforman
+                contenidoClonado.querySelectorAll('.row, .col-8, .col-4').forEach(el => {
+                    el.removeAttribute("class");
+                });
+
+                document.body.appendChild(contenidoClonado);
+
+                const opt = {
+                    margin: 0,
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    html2canvas: { scrollY: 0, scale: 4 }
+                };
+
+                html2pdf().set(opt).from(contenidoClonado).outputPdf('blob').then(function (pdfBlob) {
+                    contenidoClonado.remove();
+
+                    const formData = new FormData();
+                    formData.append("archivo", pdfBlob, nombreArchivo);
+
+                    fetch("guardar_pdf_receta.php", {
+                        method: "POST",
+                        body: formData
+                    }).then(response => {
+                        if (response.ok) {
+                            alert("PDF guardado correctamente.");
+                            window.location.href = "resumen_lab.php?cedula=<?= $_GET['cedula'] ?>";
+                        } else {
+                            alert("Error al guardar PDF.");
+                        }
+                    });
+                });
+
+            }, 500);
         });
+
     </script>
 
 
